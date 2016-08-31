@@ -69,6 +69,7 @@ export default class Camera extends Component {
       PropTypes.string,
       PropTypes.number
     ]),
+    onAuthorized: PropTypes.func,
     captureAudio: PropTypes.bool,
     captureMode: PropTypes.oneOfType([
       PropTypes.string,
@@ -150,6 +151,9 @@ export default class Camera extends Component {
     if (check) {
       const isAuthorized = await check();
       this.setState({ isAuthorized });
+      if (typeof this.props.onAuthorized == 'function') {
+        this.props.onAuthorized(isAuthorized);
+      }
     }
   }
 
@@ -196,12 +200,21 @@ export default class Camera extends Component {
     return CameraManager.capture(options);
   }
 
+
+  releaseCamera(options) {
+    const props = convertNativeProps(this.props);
+    options = {
+      type: props.type,
+      ...options
+    };
+    CameraManager.releaseCamera(options);
+  }
+
   stopCapture() {
     if (this.state.isRecording) {
+      CameraManager.stopCapture();
       this.setState({ isRecording: false });
-      return CameraManager.stopCapture();
     }
-    return Promise.resolve("Not Recording.");
   }
 
   getFOV() {

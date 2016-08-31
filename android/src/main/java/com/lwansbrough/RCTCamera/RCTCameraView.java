@@ -5,11 +5,14 @@
 package com.lwansbrough.RCTCamera;
 
 import android.content.Context;
+import android.graphics.*;
 import android.hardware.SensorManager;
 import android.view.OrientationEventListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.View;
+
+import java.lang.Exception;
 
 public class RCTCameraView extends ViewGroup {
     private final OrientationEventListener _orientationListener;
@@ -20,11 +23,17 @@ public class RCTCameraView extends ViewGroup {
     private String _captureQuality = "high";
     private int _torchMode = -1;
     private int _flashMode = -1;
+    public boolean failed = false;
 
     public RCTCameraView(Context context) {
         super(context);
         this._context = context;
-        setActualDeviceOrientation(context);
+
+        try {
+          setActualDeviceOrientation(context);
+        } catch (Exception e) {
+          this.failed = true;
+        }
 
         _orientationListener = new OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
             @Override
@@ -64,7 +73,6 @@ public class RCTCameraView extends ViewGroup {
     public void setCameraType(final int type) {
         if (null != this._viewFinder) {
             this._viewFinder.setCameraType(type);
-            RCTCamera.getInstance().adjustPreviewLayout(type);
         } else {
             _viewFinder = new RCTCameraViewFinder(_context, type);
             if (-1 != this._flashMode) {

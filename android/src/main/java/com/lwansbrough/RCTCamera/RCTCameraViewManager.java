@@ -3,6 +3,7 @@ package com.lwansbrough.RCTCamera;
 import android.support.annotation.Nullable;
 import com.facebook.react.uimanager.*;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import java.lang.Exception;
 
 public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
     private static final String REACT_CLASS = "RCTCamera";
@@ -14,7 +15,12 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
 
     @Override
     public RCTCameraView createViewInstance(ThemedReactContext context) {
-        return new RCTCameraView(context);
+        RCTCameraView view = new RCTCameraView(context);
+        if (view.failed) {
+          return null;
+        } else {
+          return view;
+        }
     }
 
     @ReactProp(name = "aspect")
